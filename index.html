@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yhdistyksen linkit</title>
+<style>
+  body {
+  font-family: sans-serif;
+  background: url("taustakuva.jpg") no-repeat center center fixed;
+  background-size: cover;
+  text-align: center;
+  padding: 40px;
+  }
+  h1 { margin-bottom: 30px; }
+  .button {
+    display: block; margin: 10px auto; padding: 12px 20px;
+    width: 250px; background: #007bff; color: white; text-decoration: none;
+    border-radius: 8px; font-weight: bold;
+    transition: 0.2s;
+  }
+  .button:hover { background: #0056b3; }
+  .desc { color: #555; font-size: 14px; margin-bottom: 20px; }
+</style>
+</head>
+<body>
+  <h1>Yhdistyksen linkit</h1>
+  <div id="links"></div>
+  <script>
+    const sheetURL = "https://docs.google.com/spreadsheets/d/1v5UEk5MwmSIlzn1Fd5ofQZKjn1iHiwtpapRuWpz2X4A/gviz/tq?tqx=out:json";
+    fetch(sheetURL)
+      .then(res => res.text())
+      .then(text => {
+        const data = JSON.parse(text.substring(47).slice(0, -2));
+        const rows = data.table.rows;
+        const container = document.getElementById("links");
+        rows.forEach(r => {
+            const desc = r.c[0]?.v || "";
+            const name = r.c[1]?.v || "";
+            const url = r.c[2]?.v || "";
+
+            // näytä vain jos rivillä on linkki (nimi + URL)
+            if (name && url) {
+                container.innerHTML += `
+                <a class="button" href="${url}" target="_blank">${name}</a>
+                ${desc ? `<div class="desc">${desc}</div>` : ""}
+                `;
+            } 
+            // jos vain desc on täytetty (otsikko / kategoria)
+            else if (desc && !name && !url) {
+                container.innerHTML += `<h2 style="margin-top:30px;">${desc}</h2>`;
+            }
+        
+        });
+      });
+  </script>
+</body>
+</html>
